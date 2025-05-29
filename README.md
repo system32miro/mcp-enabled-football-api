@@ -1,6 +1,33 @@
 # ⚽ Football API + MCP Server
 
-REST API for querying data from the main European football leagues (2023-2024 season) with **MCP (Model Context Protocol) integration** for AI agents.
+**Dual-Purpose REST API** built from scratch for querying European football data - serves both **traditional REST clients** and **AI agents through MCP integration**.
+
+## 🎯 Unique Dual Architecture
+
+This project demonstrates a **groundbreaking approach**: a single FastAPI application that simultaneously serves as:
+
+- 🌐 **Traditional REST API** - For web applications, mobile apps, and standard HTTP clients
+- 🤖 **MCP Server** - For AI agents (Claude, Cursor, Windsurf) with intelligent semantic tools
+- 📊 **Real-time SSE** - Server-Sent Events for seamless AI agent connectivity
+
+**Built from scratch** with production-ready architecture, this API showcases how modern applications can bridge traditional web development with AI agent ecosystems.
+
+## 🚀 Revolutionary Use Cases
+
+### For Traditional Development
+```bash
+# Standard REST API calls
+curl http://localhost:8000/api/v1/teams?search=manchester
+curl http://localhost:8000/api/v1/matches?league_id=1
+```
+
+### For AI Agents
+```
+"Show me Manchester City's latest matches"
+"What's the current Premier League standings?"
+"How many goals did Barcelona score this season?"
+```
+**Same data, same API - different interaction paradigms!**
 
 ## 🤖 MCP Functionality
 
