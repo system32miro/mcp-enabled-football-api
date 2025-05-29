@@ -1,59 +1,144 @@
-# ⚽ Football API
+# ⚽ Football API + MCP Server
 
-API REST para consulta de dados das principais ligas europeias de futebol (época 2023-2024).
+REST API for querying data from the main European football leagues (2023-2024 season) with **MCP (Model Context Protocol) integration** for AI agents.
 
-## 📊 Dados Disponíveis
+## 🤖 MCP Functionality
 
-- **5 Ligas Principais**: Premier League, La Liga, Serie A, Bundesliga, Ligue 1
-- **96 Equipas** com informações completas
-- **3150 Jogadores** com dados pessoais e posições
-- **1752 Jogos** com resultados e estatísticas
-- **Classificações** atualizadas de todas as ligas
-- **Estádios**, **Treinadores** e **Árbitros**
+This API includes an **integrated MCP server** that allows AI agents (like Claude, Cursor, etc.) to directly access football data through intelligent semantic tools.
 
-## 🚀 Como Executar
+### ✨ MCP Capabilities
+- 🔍 **Intelligent search** for teams, players and matches
+- 📊 **Automated statistics** queries
+- 🏆 **Real-time standings** analysis
+- 🎯 **Automatic filters** by league, team, matchday
+- 📈 **Complex data** aggregation
+- 🤝 **Native integration** with IDEs and AI agents
 
-### Método 1: Diretamente com Python
+### 🔗 MCP Endpoint
+- **MCP URL**: `http://localhost:8000/mcp`
+- **Protocol**: Server-Sent Events (SSE)
+- **Tools**: 6 automatic tools generated from API endpoints
+
+## 📊 Available Data
+
+- **5 Main Leagues**: Premier League, La Liga, Serie A, Bundesliga, Ligue 1
+- **96 Teams** with complete information
+- **3150 Players** with personal data and positions
+- **1752 Matches** with results and statistics
+- **Updated standings** for all leagues
+- **Stadiums**, **Coaches** and **Referees**
+
+## 🚀 How to Run
+
+### Method 1: Directly with Python
 ```bash
-# Instalar dependências
+# Install dependencies (includes fastapi-mcp)
 pip install -r requirements.txt
 
-# Configurar variáveis de ambiente (opcional)
+# Configure environment variables (optional)
 cp .env.example .env
 
-# Executar a API
+# Run API with integrated MCP
 uvicorn app.main:app --reload
 
-# Acessar em: http://localhost:8000
+# Access API at: http://localhost:8000
+# Access MCP at: http://localhost:8000/mcp
 ```
 
-### Método 2: Com Docker (Desenvolvimento)
+### Method 2: With Docker (Development)
 ```bash
-# Construir e executar
+# Build and run
 docker-compose up --build
 
-# Acessar em: http://localhost:8000
+# Access API at: http://localhost:8000
+# Access MCP at: http://localhost:8000/mcp
 ```
 
-### Método 3: Deploy em Produção
+### Method 3: Production Deploy
 ```bash
-# Configurar variáveis para produção
+# Configure variables for production
 export ENVIRONMENT=production
 export ALLOWED_ORIGINS=https://yourdomain.com
 export LOG_LEVEL=WARNING
 export ENABLE_DOCS=false
 
-# Deploy com docker-compose de produção
+# Deploy with production docker-compose
 docker-compose -f docker-compose.prod.yml up -d
 
-# Monitorizar logs
+# Monitor logs
 docker-compose -f docker-compose.prod.yml logs -f
 ```
 
-## 🔧 Configuração para Produção
+## 🤖 MCP Configuration for IDEs
 
-### Variáveis de Ambiente
-Copie `.env.example` para `.env` e configure:
+### Cursor / Windsurf
+Add to `~/.cursor/mcp.json` or `~/.windsurf/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "football-api-mcp": {
+      "url": "http://localhost:8000/mcp"
+    }
+  }
+}
+```
+
+### Claude Desktop
+Add to Claude configuration file:
+
+```json
+{
+  "mcpServers": {
+    "football-api-mcp": {
+      "url": "http://localhost:8000/mcp"
+    }
+  }
+}
+```
+
+### Other MCP Clients
+For clients that don't support SSE directly, use `mcp-remote`:
+
+```json
+{
+  "mcpServers": {
+    "football-api-mcp": {
+      "command": "npx",
+      "args": [
+        "mcp-remote", 
+        "http://localhost:8000/mcp"
+      ]
+    }
+  }
+}
+```
+
+## 🛠️ Available MCP Tools
+
+### 1. `health_check`
+Check API status and database connectivity
+
+### 2. `get_leagues_api_v1_leagues__get`
+Get all available European leagues
+
+### 3. `get_teams_api_v1_teams__get`
+Search teams with filters and pagination
+- Parameters: `search`, `league_id`, `page`, `size`
+
+### 4. `get_team_api_v1_teams__team_id__get`
+Get complete details of a specific team
+
+### 5. `get_matches_api_v1_matches__get`
+Query matches with advanced filters
+- Parameters: `league_id`, `team_id`, `matchday`, `winner`, `page`, `size`
+
+Each tool includes **complete documentation** and **JSON schemas** to facilitate AI agent understanding.
+
+## 🔧 Production Configuration
+
+### Environment Variables
+Copy `.env.example` to `.env` and configure:
 
 ```bash
 ENVIRONMENT=production
@@ -61,173 +146,217 @@ ALLOWED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
 DATABASE_PATH=sports_league.sqlite
 LOG_LEVEL=WARNING
 API_VERSION=1.0.0
-ENABLE_DOCS=false  # Desabilitar em produção
+ENABLE_DOCS=false  # Disable in production
 MAX_PAGE_SIZE=100
 DEFAULT_PAGE_SIZE=20
 ```
 
-### Checklist de Deploy
-- [ ] Configurar CORS para domínios específicos
-- [ ] Desabilitar documentação em produção (`ENABLE_DOCS=false`)
-- [ ] Configurar logging apropriado (`LOG_LEVEL=WARNING`)
-- [ ] Configurar SSL/HTTPS
-- [ ] Implementar proxy reverso (Nginx)
-- [ ] Configurar backup da base de dados
-- [ ] Configurar monitorização
+### Deploy Checklist
+- [ ] Configure CORS for specific domains
+- [ ] Disable documentation in production (`ENABLE_DOCS=false`)
+- [ ] Configure appropriate logging (`LOG_LEVEL=WARNING`)
+- [ ] Configure SSL/HTTPS
+- [ ] Implement reverse proxy (Nginx)
+- [ ] Configure database backup
+- [ ] Configure monitoring
+- [ ] **Test MCP connectivity** in production
 
-## 📚 Documentação da API
+## 📚 API Documentation
 
-- **Swagger UI**: http://localhost:8000/docs (apenas em desenvolvimento)
-- **ReDoc**: http://localhost:8000/redoc (apenas em desenvolvimento)
+- **Swagger UI**: http://localhost:8000/docs (development only)
+- **ReDoc**: http://localhost:8000/redoc (development only)
 - **Health Check**: http://localhost:8000/api/v1/health
+- **MCP Server**: http://localhost:8000/mcp
 
-## 🔗 Endpoints Principais
+## 🔗 Main Endpoints
 
-### Ligas
-- `GET /api/v1/leagues` - Listar todas as ligas
-- `GET /api/v1/leagues/{id}` - Detalhes de uma liga
-- `GET /api/v1/leagues/{id}/teams` - Equipas de uma liga
-- `GET /api/v1/leagues/{id}/standings` - Classificação da liga
+### Leagues
+- `GET /api/v1/leagues` - List all leagues
+- `GET /api/v1/leagues/{id}` - League details
+- `GET /api/v1/leagues/{id}/teams` - Teams in a league
+- `GET /api/v1/leagues/{id}/standings` - League standings
 
-### Equipas
-- `GET /api/v1/teams` - Listar equipas (com paginação e pesquisa)
-- `GET /api/v1/teams/{id}` - Detalhes de uma equipa
-- `GET /api/v1/teams/{id}/players` - Jogadores da equipa
-- `GET /api/v1/teams/{id}/matches` - Jogos da equipa
-- `GET /api/v1/teams/{id}/statistics` - Estatísticas da equipa
+### Teams
+- `GET /api/v1/teams` - List teams (with pagination and search)
+- `GET /api/v1/teams/{id}` - Team details
+- `GET /api/v1/teams/{id}/players` - Team players
+- `GET /api/v1/teams/{id}/matches` - Team matches
+- `GET /api/v1/teams/{id}/statistics` - Team statistics
 
-### Jogos
-- `GET /api/v1/matches` - Listar jogos (com filtros e paginação)
-- `GET /api/v1/matches/{id}` - Detalhes de um jogo
-- `GET /api/v1/matches/upcoming` - Próximos jogos
+### Matches
+- `GET /api/v1/matches` - List matches (with filters and pagination)
+- `GET /api/v1/matches/{id}` - Match details
+- `GET /api/v1/matches/upcoming` - Upcoming matches
 
-## 🔍 Filtros e Pesquisa
+## 🔍 Filters and Search
 
-### Paginação
+### Pagination
 ```
 ?page=1&size=20
 ```
 
-### Filtros por Liga
+### Filter by League
 ```
 ?league_id=1
 ```
 
-### Pesquisa por Nome
+### Search by Name
 ```
 ?search=manchester
 ```
 
-### Filtros de Jogos
+### Match Filters
 ```
 ?team_id=65&winner=HOME_TEAM&matchday=1
 ```
 
-## 📖 Exemplos de Uso
+## 📖 Usage Examples
 
-### Obter todas as ligas
+### Traditional REST API
+
 ```bash
+# Get all leagues
 curl http://localhost:8000/api/v1/leagues
-```
 
-### Pesquisar equipas do Manchester
-```bash
+# Search Manchester teams
 curl "http://localhost:8000/api/v1/teams?search=manchester"
-```
 
-### Classificação da Premier League
-```bash
+# Premier League standings
 curl http://localhost:8000/api/v1/leagues/1/standings
-```
 
-### Jogos do Manchester City
-```bash
+# Manchester City matches
 curl http://localhost:8000/api/v1/teams/65/matches
 ```
 
-## 🛠️ Tecnologias
+### Through MCP Agent (Cursor/Claude)
 
-- **FastAPI** - Framework web moderno e rápido
-- **Pydantic** - Validação de dados
-- **SQLite** - Base de dados leve e portável
-- **Uvicorn** - Servidor ASGI
-- **Docker** - Containerização
+```
+"How many teams are in the Premier League?"
+"Show me Manchester City's details"
+"What's the current La Liga standings?"
+"How many goals did Barcelona score this season?"
+```
 
-## 📁 Estrutura do Projeto
+The agent will automatically use MCP tools to answer the questions!
+
+## 🛠️ Technologies
+
+- **FastAPI** - Modern and fast web framework
+- **FastAPI-MCP** - Native MCP integration
+- **Pydantic** - Data validation
+- **SQLite** - Lightweight and portable database
+- **Uvicorn** - ASGI server
+- **Docker** - Containerization
+- **MCP Protocol** - Model Context Protocol for AI agents
+
+## 📁 Project Structure
 
 ```
 api/
 ├── app/
-│   ├── main.py              # Aplicação principal
-│   ├── config.py            # Configurações e variáveis de ambiente
-│   ├── logging_config.py    # Configuração de logging
-│   ├── database.py          # Conexão SQLite
-│   ├── models.py            # Modelos Pydantic
-│   ├── utils.py             # Utilitários (paginação, filtros)
-│   └── routers/             # Endpoints organizados
+│   ├── main.py              # Main application + MCP Server
+│   ├── config.py            # Configuration and environment variables
+│   ├── logging_config.py    # Logging configuration
+│   ├── database.py          # SQLite connection
+│   ├── models.py            # Pydantic models
+│   ├── utils.py             # Utilities (pagination, filters)
+│   └── routers/             # Organized endpoints
 │       ├── leagues.py
 │       ├── matches.py
 │       └── teams.py
-├── requirements.txt         # Dependências Python
-├── Dockerfile              # Configuração Docker
-├── docker-compose.yml      # Desenvolvimento
-├── docker-compose.prod.yml # Produção
-├── .env.example            # Exemplo de configuração
-├── README.md               # Este ficheiro
-└── sports_league.sqlite    # Base de dados
+├── requirements.txt         # Python dependencies (includes fastapi-mcp)
+├── Dockerfile              # Docker configuration
+├── docker-compose.yml      # Development
+├── docker-compose.prod.yml # Production
+├── .env.example            # Configuration example
+├── README.md               # This file
+└── sports_league.sqlite    # Database
 ```
 
-## 🎯 Funcionalidades
+## 🎯 Features
 
-✅ **API REST completa** com documentação automática  
-✅ **Paginação** para grandes conjuntos de dados  
-✅ **Filtros avançados** por liga, equipa, jornada  
-✅ **Pesquisa de texto** em nomes de equipas  
-✅ **Estatísticas detalhadas** de equipas  
-✅ **Relações entre dados** (equipas ↔ jogadores ↔ jogos)  
-✅ **CORS configurado** para acesso web  
-✅ **Health checks** para monitorização  
-✅ **Docker ready** para deployment fácil  
-✅ **Logging estruturado** para produção  
-✅ **Configurações por ambiente** (dev/prod)  
-✅ **Tratamento de erros** robusto  
-✅ **Segurança** com usuário não-root  
+✅ **Complete REST API** with automatic documentation  
+✅ **Integrated MCP server** for AI agents  
+✅ **6 MCP tools** automatically generated  
+✅ **Complete MCP documentation** with JSON schemas  
+✅ **SSE support** for real-time connectivity  
+✅ **Pagination** for large datasets  
+✅ **Advanced filters** by league, team, matchday  
+✅ **Text search** in team names  
+✅ **Detailed statistics** for teams  
+✅ **Data relationships** (teams ↔ players ↔ matches)  
+✅ **Configured CORS** for web access  
+✅ **Health checks** for monitoring  
+✅ **Docker ready** for easy deployment  
+✅ **Structured logging** for production  
+✅ **Environment configurations** (dev/prod)  
+✅ **Robust error handling**  
+✅ **Security** with non-root user  
 
-## 🔒 Segurança
+## 🔒 Security
 
-- API é **read-only** (apenas consultas GET)
-- **Validação de dados** com Pydantic
-- **Tratamento de erros** consistente
-- **Limites de paginação** para prevenir sobrecarga
-- **CORS restrito** a domínios específicos em produção
-- **Logs de auditoria** para todas as requests
-- **Contentor com usuário não-root**
+- API is **read-only** (GET queries only)
+- **MCP Server exposed** locally by default
+- **Data validation** with Pydantic
+- **Consistent error handling**
+- **Pagination limits** to prevent overload
+- **Restricted CORS** to specific domains in production
+- **Audit logs** for all requests
+- **Container with non-root user**
 
-## 📊 Monitorização
+## 📊 Monitoring
 
 - **Health check endpoint**: `/api/v1/health`
-- **Logs estruturados** em ficheiro e stdout
-- **Métricas de performance** nos logs
-- **Docker health checks** configurados
+- **MCP connectivity check** through health check
+- **Structured logs** in file and stdout
+- **Performance metrics** in logs
+- **Configured Docker health checks**
+- **MCP usage tracking** in logs
 
-## 📊 Dados de Exemplo
+## 🤖 MCP Use Cases
 
-A API contém dados reais da época 2023-2024 das cinco principais ligas europeias, incluindo:
+### For Developers
+- Quick data search during development
+- Statistics analysis without leaving the IDE
+- Ad-hoc queries through Cursor chat
 
-- **Premier League**: 20 equipas, ~380 jogos
-- **La Liga**: 20 equipas, ~380 jogos  
-- **Serie A**: 20 equipas, ~380 jogos
-- **Bundesliga**: 18 equipas, ~306 jogos
-- **Ligue 1**: 18 equipas, ~306 jogos
+### For Sports Analysts
+- Automated comparative analyses
+- Data-driven report generation
+- Pattern identification through AI
 
-## 🤝 Contribuições
+### For Journalists
+- Quick fact verification
+- Statistics gathering for articles
+- Contextual queries about teams and players
 
-Este é um projeto simples para demonstração. Sinta-se à vontade para fazer fork e melhorar!
+## 📊 Sample Data
 
-## 📄 Licença
+The API contains real data from the 2023-2024 season of the five main European leagues, including:
 
-MIT License - Consulte o ficheiro LICENSE para detalhes.
+- **Premier League**: 20 teams, ~380 matches
+- **La Liga**: 20 teams, ~380 matches  
+- **Serie A**: 20 teams, ~380 matches
+- **Bundesliga**: 18 teams, ~306 matches
+- **Ligue 1**: 18 teams, ~306 matches
+
+## 🚀 Next Steps
+
+- [ ] Add more MCP tools (advanced statistics)
+- [ ] Implement cache for better performance
+- [ ] Add historical data from previous seasons
+- [ ] Create optional web dashboard
+- [ ] Implement webhooks for real-time updates
+
+## 🤝 Contributions
+
+This project demonstrates the perfect integration between FastAPI and MCP. Feel free to fork and improve!
+
+## 📄 License
+
+MIT License - See LICENSE file for details.
 
 ---
 
-**Fonte dos dados**: [Kaggle - Football Data European Top 5 Leagues](https://www.kaggle.com/datasets/kamrangayibov/football-data-european-top-5-leagues) 
+**Data Source**: [Kaggle - Football Data European Top 5 Leagues](https://www.kaggle.com/datasets/kamrangayibov/football-data-european-top-5-leagues)  
+**Powered by**: [FastAPI](https://fastapi.tiangolo.com/) + [FastAPI-MCP](https://fastapi-mcp.tadata.com/) 

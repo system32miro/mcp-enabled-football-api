@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  football-api:
+    build: .
+    ports:
+      - "8000:8000"  # API REST + MCP Server
+    volumes:
+      - .:/app  # Volume for development with reload
+      - ./sports_league.sqlite:/app/sports_league.sqlite:ro  # Read-only database
+    environment:
+      - ENVIRONMENT=development
+      - ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8080
+      - LOG_LEVEL=INFO
+      - ENABLE_DOCS=true  # Enable docs in development
+      - PYTHONPATH=/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+# DEVELOPMENT:
+# - REST API: http://localhost:8000
+# - Documentation: http://localhost:8000/docs
+# - MCP Server: http://localhost:8000/mcp
+#
+# To configure MCP in Cursor, add to ~/.cursor/mcp.json:
+# {
+#   "mcpServers": {
+#     "football-api-mcp": {
+#       "url": "http://localhost:8000/mcp"
+#     }
+#   }
+# } 
