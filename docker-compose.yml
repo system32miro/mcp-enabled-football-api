@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  football-api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./sports_league.sqlite:/app/sports_league.sqlite:ro  # Read-only
+    environment:
+      - PYTHONPATH=/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3 
